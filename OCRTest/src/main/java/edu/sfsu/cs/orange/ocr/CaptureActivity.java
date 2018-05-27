@@ -106,7 +106,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   private String characterBlacklist;
   private String characterWhitelist;
   private ShutterButton shutterButton;
-  private boolean isContinuousModeActive; // Whether we are doing OCR in continuous mode
+  private boolean isContinuousModeActive = false; // Whether we are doing OCR in continuous mode
   private SharedPreferences prefs;
   private OnSharedPreferenceChangeListener listener;
   private ProgressDialog dialog; // for initOcr - language download & unzip
@@ -287,9 +287,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     // isEngineReady = true here.
     isEngineReady = true;
 
-    if (handler != null) {
-      handler.resetState();
-    }
     if (baseApi != null) {
       baseApi.setPageSegMode(pageSegmentationMode);
       baseApi.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, characterBlacklist);
@@ -467,7 +464,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       dialog.dismiss();
     }
     dialog = new ProgressDialog(this);
-      
+
     // Display the name of the OCR engine we're initializing in the indeterminate progress dialog box
     indeterminateDialog = new ProgressDialog(this);
     indeterminateDialog.setTitle("Please wait");
@@ -666,14 +663,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       prefs = PreferenceManager.getDefaultSharedPreferences(this);
       
       // Retrieve from preferences, and set in this Activity, the language preferences
-      PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
       setSourceLanguage("eng");
-
-    isContinuousModeActive = false;
-
-
-    // Retrieve from preferences, and set in this Activity, the page segmentation mode preference
-        pageSegmentationMode = TessBaseAPI.PageSegMode.PSM_AUTO_OSD;
 
       // Retrieve from preferences, and set in this Activity, the character blacklist and whitelist
       characterBlacklist = OcrCharacterHelper.getBlacklist(prefs, sourceLanguageCodeOcr);
