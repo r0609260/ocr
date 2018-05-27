@@ -552,12 +552,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       startActivity(intent);
       break;
     }
-//    case ABOUT_ID: {
-//      intent = new Intent(this, CaptureActivity.class);
-//      intent.putExtra(HelpActivity.REQUESTED_PAGE_KEY, HelpActivity.ABOUT_PAGE);
-//      startActivity(intent);
-//      break;
-//    }
     }
     return super.onOptionsItemSelected(item);
   }
@@ -572,15 +566,12 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   /** Sets the necessary language code values for the given OCR language. */
   private boolean setSourceLanguage(String languageCode) {
     sourceLanguageCodeOcr = languageCode;
-  //  sourceLanguageCodeTranslation = LanguageCodeHelper.mapLanguageCode(languageCode);
-   // sourceLanguageReadable = LanguageCodeHelper.getOcrLanguageName(this, languageCode);
     return true;
   }
 
   /** Sets the necessary language code values for the translation target language. */
   private boolean setTargetLanguage(String languageCode) {
     targetLanguageCodeTranslation = languageCode;
-   // targetLanguageReadable = LanguageCodeHelper.getTranslationLanguageName(this, languageCode);
     return true;
   }
 
@@ -638,58 +629,24 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       dialog.dismiss();
     }
     dialog = new ProgressDialog(this);
-    
-    // If we have a language that only runs using Cube, then set the ocrEngineMode to Cube
-    if (ocrEngineMode != TessBaseAPI.OEM_CUBE_ONLY) {
-      for (String s : CUBE_REQUIRED_LANGUAGES) {
-        if (s.equals(languageCode)) {
-          ocrEngineMode = TessBaseAPI.OEM_CUBE_ONLY;
-          SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-          prefs.edit().putString(PreferencesActivity.KEY_OCR_ENGINE_MODE, getOcrEngineModeName()).commit();
-        }
-      }
-    }
 
-    // If our language doesn't support Cube, then set the ocrEngineMode to Tesseract
-    if (ocrEngineMode != TessBaseAPI.OEM_TESSERACT_ONLY) {
-      boolean cubeOk = false;
-      for (String s : CUBE_SUPPORTED_LANGUAGES) {
-        if (s.equals(languageCode)) {
-          cubeOk = true;
-        }
-      }
-      if (!cubeOk) {
-        ocrEngineMode = TessBaseAPI.OEM_TESSERACT_ONLY;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        prefs.edit().putString(PreferencesActivity.KEY_OCR_ENGINE_MODE, getOcrEngineModeName()).commit();
-      }
-    }
-    
+      //set the ocrEngineMode to Tesseract
+
+    ocrEngineMode = TessBaseAPI.OEM_TESSERACT_ONLY;
+    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+    prefs.edit().putString(PreferencesActivity.KEY_OCR_ENGINE_MODE,"Tesseract").commit();
+
     // Display the name of the OCR engine we're initializing in the indeterminate progress dialog box
     indeterminateDialog = new ProgressDialog(this);
     indeterminateDialog.setTitle("Please wait");
-    String ocrEngineModeName = getOcrEngineModeName();
-    if (ocrEngineModeName.equals("Both")) {
-      indeterminateDialog.setMessage("Initializing Cube and Tesseract OCR engines for " + languageName + "...");
-    } else {
-      indeterminateDialog.setMessage("Initializing " + ocrEngineModeName + " OCR engine for " + languageName + "...");
-    }
+    indeterminateDialog.setMessage("Initializing tesseract OCR engine for English");
     indeterminateDialog.setCancelable(false);
     indeterminateDialog.show();
-    
+
     if (handler != null) {
-      handler.quitSynchronously();     
+      handler.quitSynchronously();
     }
 
-    // Disable continuous mode if we're using Cube. This will prevent bad states for devices 
-    // with low memory that crash when running OCR with Cube, and prevent unwanted delays.
-    if (ocrEngineMode == TessBaseAPI.OEM_CUBE_ONLY || ocrEngineMode == TessBaseAPI.OEM_TESSERACT_CUBE_COMBINED) {
-      Log.d(TAG, "Disabling continuous preview");
-      isContinuousModeActive = false;
-      SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-      prefs.edit().putBoolean(PreferencesActivity.KEY_CONTINUOUS_PREVIEW, false);
-    }
-    
     // Start AsyncTask to install language data and init OCR
     baseApi = new TessBaseAPI();
     new OcrInitAsyncTask(this, baseApi, dialog, indeterminateDialog, languageCode, languageName, ocrEngineMode)
@@ -969,24 +926,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   }
 
   /**
-   * Returns a string that represents which OCR engine(s) are currently set to be run.
-   * 
-   * @return OCR engine mode
-   */
-  String getOcrEngineModeName() {
-    String ocrEngineModeName = "";
-    String[] ocrEngineModes = getResources().getStringArray(R.array.ocrenginemodes);
-    if (ocrEngineMode == TessBaseAPI.OEM_TESSERACT_ONLY) {
-      ocrEngineModeName = ocrEngineModes[0];
-    } else if (ocrEngineMode == TessBaseAPI.OEM_CUBE_ONLY) {
-      ocrEngineModeName = ocrEngineModes[1];
-    } else if (ocrEngineMode == TessBaseAPI.OEM_TESSERACT_CUBE_COMBINED) {
-      ocrEngineModeName = ocrEngineModes[2];
-    }
-    return ocrEngineModeName;
-  }
-  
-  /**
    * Gets values from shared preferences and sets the corresponding data members in this activity.
    */
   private void retrievePreferences() {
@@ -1008,8 +947,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       characterWhitelist = OcrCharacterHelper.getWhitelist(prefs, sourceLanguageCodeOcr);
 
       prefs.registerOnSharedPreferenceChangeListener(listener);
-
-     // beepManager.updatePrefs();
   }
   
   /**
@@ -1047,12 +984,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     // Set up the indeterminate progress dialog box
     indeterminateDialog = new ProgressDialog(this);
     indeterminateDialog.setTitle("Please wait");        
-    String ocrEngineModeName = getOcrEngineModeName();
-    if (ocrEngineModeName.equals("Both")) {
-      indeterminateDialog.setMessage("Performing OCR using Cube and Tesseract...");
-    } else {
-      indeterminateDialog.setMessage("Performing OCR using " + ocrEngineModeName + "...");
-    }
+
+      indeterminateDialog.setMessage("Performing OCR using Tesseract");
+
     indeterminateDialog.setCancelable(false);
     indeterminateDialog.show();
   }
