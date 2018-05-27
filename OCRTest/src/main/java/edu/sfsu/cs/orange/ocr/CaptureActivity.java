@@ -100,24 +100,18 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
  // private BeepManager beepManager;
   private TessBaseAPI baseApi; // Java interface for the Tesseract OCR engine
   private String sourceLanguageCodeOcr; // ISO 639-3 language code
-  private String sourceLanguageReadable; // Language name, for example, "English"
-  private String sourceLanguageCodeTranslation; // ISO 639-1 language code
-  private String targetLanguageCodeTranslation; // ISO 639-1 language code
-  private String targetLanguageReadable; // Language name, for example, "English"
+  private String sourceLanguageReadable = "English"; // Language name, for example, "English"
   private int pageSegmentationMode = TessBaseAPI.PageSegMode.PSM_AUTO_OSD;
   private int ocrEngineMode = TessBaseAPI.OEM_TESSERACT_ONLY;
   private String characterBlacklist;
   private String characterWhitelist;
   private ShutterButton shutterButton;
-  private boolean isTranslationActive; // Whether we want to show translations
   private boolean isContinuousModeActive; // Whether we are doing OCR in continuous mode
   private SharedPreferences prefs;
   private OnSharedPreferenceChangeListener listener;
   private ProgressDialog dialog; // for initOcr - language download & unzip
   private ProgressDialog indeterminateDialog; // also for initOcr - init OCR engine
   private boolean isEngineReady;
-  private boolean isPaused;
-  private static boolean isFirstLaunch; // True if this is the first time the app is being run
 
   Handler getHandler() {
     return handler;
@@ -254,10 +248,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   protected void onResume() {
     super.onResume();   
     resetStatusView();
-    
-    String previousSourceLanguageCodeOcr = sourceLanguageCodeOcr;
-    int previousOcrEngineMode = ocrEngineMode;
-    
+
     retrievePreferences();
     
     // Set up the camera preview surface.
@@ -271,8 +262,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     // Comment out the following block to test non-OCR functions without an SD card
     
     // Do OCR engine initialization, if necessary
-    boolean doNewInit = (baseApi == null) || !sourceLanguageCodeOcr.equals(previousSourceLanguageCodeOcr) || 
-        ocrEngineMode != previousOcrEngineMode;
+    boolean doNewInit = (baseApi == null);
     if (doNewInit) {      
       // Initialize the OCR engine
       File storageDirectory = getStorageDirectory();
@@ -296,8 +286,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     // This method is called when Tesseract has already been successfully initialized, so set 
     // isEngineReady = true here.
     isEngineReady = true;
-    
-    isPaused = false;
 
     if (handler != null) {
       handler.resetState();
@@ -312,34 +300,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       // The activity was paused but not stopped, so the surface still exists. Therefore
       // surfaceCreated() won't be called, so init the camera here.
       initCamera(surfaceHolder);
-    }
-  }
-  
-  /** Called when the shutter button is pressed in continuous mode. */
-  void onShutterButtonPressContinuous() {
-    isPaused = true;
-    handler.stop();  
-    //beepManager.playBeepSoundAndVibrate();
-    if (lastResult != null) {
-      handleOcrDecode(lastResult);
-    } else {
-      Toast toast = Toast.makeText(this, "OCR failed. Please try again.", Toast.LENGTH_SHORT);
-      toast.setGravity(Gravity.TOP, 0, 0);
-      toast.show();
-      resumeContinuousDecoding();
-    }
-  }
-
-  /** Called to resume recognition after translation in continuous mode. */
-  @SuppressWarnings("unused")
-  void resumeContinuousDecoding() {
-    isPaused = false;
-    resetStatusView();
-    setStatusViewForContinuous();
-    DecodeHandler.resetDecodeState();
-    handler.resetState();
-    if (shutterButton != null && DISPLAY_SHUTTER_BUTTON) {
-      shutterButton.setVisibility(View.VISIBLE);
     }
   }
 
@@ -416,14 +376,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
     if (keyCode == KeyEvent.KEYCODE_BACK) {
-
-      // First check if we're paused in continuous mode, and if so, just unpause.
-      if (isPaused) {
-        Log.d(TAG, "only resuming continuous recognition, not quitting...");
-        resumeContinuousDecoding();
-        return true;
-      }
-
       // Exit the app if we're not viewing an OCR result.
       if (lastResult == null) {
         setResult(RESULT_CANCELED);
@@ -438,11 +390,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         return true;
       }
     } else if (keyCode == KeyEvent.KEYCODE_CAMERA) {
-      if (isContinuousModeActive) {
-        onShutterButtonPressContinuous();
-      } else {
         handler.hardwareShutterButtonClick();
-      }
       return true;
     } else if (keyCode == KeyEvent.KEYCODE_FOCUS) {      
       // Only perform autofocus if user is not holding down the button.
@@ -452,16 +400,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       return true;
     }
     return super.onKeyDown(keyCode, event);
-  }
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    //    MenuInflater inflater = getMenuInflater();
-    //    inflater.inflate(R.menu.options_menu, menu);
-    super.onCreateOptionsMenu(menu);
-    menu.add(0, SETTINGS_ID, 0, "Settings").setIcon(android.R.drawable.ic_menu_preferences);
-    menu.add(0, ABOUT_ID, 0, "About").setIcon(android.R.drawable.ic_menu_info_details);
-    return true;
   }
 
   public void surfaceDestroyed(SurfaceHolder holder) {
@@ -477,16 +415,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     return true;
   }
 
-  /** Sets the necessary language code values for the translation target language. */
-  private boolean setTargetLanguage(String languageCode) {
-    targetLanguageCodeTranslation = languageCode;
-    return true;
-  }
-
   /** Finds the proper location on the SD card where we can save files. */
   private File getStorageDirectory() {
-    //Log.d(TAG, "getStorageDirectory(): API level is " + Integer.valueOf(android.os.Build.VERSION.SDK_INT));
-    
     String state = null;
     try {
       state = Environment.getExternalStorageState();
@@ -537,11 +467,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       dialog.dismiss();
     }
     dialog = new ProgressDialog(this);
-
-      //set the ocrEngineMode to Tesseract
-
-    ocrEngineMode = TessBaseAPI.OEM_TESSERACT_ONLY;
-
+      
     // Display the name of the OCR engine we're initializing in the indeterminate progress dialog box
     indeterminateDialog = new ProgressDialog(this);
     indeterminateDialog.setTitle("Please wait");
@@ -712,13 +638,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   
   @Override
   public void onShutterButtonClick(ShutterButton b) {
-    if (isContinuousModeActive) {
-      onShutterButtonPressContinuous();
-    } else {
       if (handler != null) {
         handler.shutterButtonClick();
       }
-    }
   }
 
   @Override
@@ -752,7 +674,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
     // Retrieve from preferences, and set in this Activity, the page segmentation mode preference
         pageSegmentationMode = TessBaseAPI.PageSegMode.PSM_AUTO_OSD;
-        ocrEngineMode = TessBaseAPI.OEM_TESSERACT_ONLY;
 
       // Retrieve from preferences, and set in this Activity, the character blacklist and whitelist
       characterBlacklist = OcrCharacterHelper.getBlacklist(prefs, sourceLanguageCodeOcr);
