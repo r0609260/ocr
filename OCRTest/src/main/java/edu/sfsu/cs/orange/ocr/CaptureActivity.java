@@ -618,14 +618,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         Log.e(TAG, "External storage is unavailable");
         showErrorMessage("Error", "Required external storage (such as an SD card) is full or unavailable.");
       }
-      
-      //        } else {
-      //          // For Android 2.1 and below, explicitly give the path as, for example,
-      //          // "/mnt/sdcard/Android/data/edu.sfsu.cs.orange.ocr/files/"
-      //          return new File(Environment.getExternalStorageDirectory().toString() + File.separator + 
-      //                  "Android" + File.separator + "data" + File.separator + getPackageName() + 
-      //                  File.separator + "files" + File.separator);
-      //        }
     
     } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
     	// We can only read the media
@@ -866,10 +858,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       menu.add(Menu.NONE, OPTIONS_COPY_RECOGNIZED_TEXT_ID, Menu.NONE, "Copy recognized text");
       menu.add(Menu.NONE, OPTIONS_SHARE_RECOGNIZED_TEXT_ID, Menu.NONE, "Share recognized text");
     }
-//    else if (v.equals(translationView)){
-//      menu.add(Menu.NONE, OPTIONS_COPY_TRANSLATED_TEXT_ID, Menu.NONE, "Copy translated text");
-//      menu.add(Menu.NONE, OPTIONS_SHARE_TRANSLATED_TEXT_ID, Menu.NONE, "Share translated text");
-//    }
   }
 
   @Override
@@ -891,20 +879,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     	shareRecognizedTextIntent.putExtra(android.content.Intent.EXTRA_TEXT, ocrResultView.getText());
     	startActivity(Intent.createChooser(shareRecognizedTextIntent, "Share via"));
     	return true;
-//    case OPTIONS_COPY_TRANSLATED_TEXT_ID:
-//        clipboardManager.setText(translationView.getText());
-//      if (clipboardManager.hasText()) {
-//        Toast toast = Toast.makeText(this, "Text copied.", Toast.LENGTH_LONG);
-//        toast.setGravity(Gravity.BOTTOM, 0, 0);
-//        toast.show();
-//      }
-//      return true;
-//    case OPTIONS_SHARE_TRANSLATED_TEXT_ID:
-//    	Intent shareTranslatedTextIntent = new Intent(android.content.Intent.ACTION_SEND);
-//    	shareTranslatedTextIntent.setType("text/plain");
-//    	shareTranslatedTextIntent.putExtra(android.content.Intent.EXTRA_TEXT, translationView.getText());
-//    	startActivity(Intent.createChooser(shareTranslatedTextIntent, "Share via"));
-//    	return true;
     default:
       return super.onContextItemSelected(item);
     }
