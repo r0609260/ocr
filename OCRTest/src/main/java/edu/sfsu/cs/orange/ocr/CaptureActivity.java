@@ -169,7 +169,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   private TextView statusViewBottom;
   private TextView statusViewTop;
   private TextView ocrResultView;
-  private TextView translationView;
+  //private TextView translationView;
   private View cameraButtonView;
   private View resultView;
   private View progressView;
@@ -246,8 +246,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
    
     ocrResultView = (TextView) findViewById(R.id.ocr_result_text_view);
     registerForContextMenu(ocrResultView);
-    translationView = (TextView) findViewById(R.id.translation_text_view);
-    registerForContextMenu(translationView);
+    //translationView = (TextView) findViewById(R.id.translation_text_view);
+    //registerForContextMenu(translationView);
     
     progressView = (View) findViewById(R.id.indeterminate_progress_indicator_view);
 
@@ -756,31 +756,12 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     int scaledSize = Math.max(22, 32 - ocrResult.getText().length() / 4);
     ocrResultTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, scaledSize);
 
-//    TextView translationLanguageLabelTextView = (TextView) findViewById(R.id.translation_language_label_text_view);
-//    TextView translationLanguageTextView = (TextView) findViewById(R.id.translation_language_text_view);
-//    TextView translationTextView = (TextView) findViewById(R.id.translation_text_view);
-//    if (isTranslationActive) {
-//      // Handle translation text fields
-//      translationLanguageLabelTextView.setVisibility(View.VISIBLE);
-//      translationLanguageTextView.setText(targetLanguageReadable);
-//      translationLanguageTextView.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL), Typeface.NORMAL);
-//      translationLanguageTextView.setVisibility(View.VISIBLE);
-//
-//      // Activate/re-activate the indeterminate progress indicator
-//      translationTextView.setVisibility(View.GONE);
       progressView.setVisibility(View.VISIBLE);
       setProgressBarVisibility(true);
       
       // Get the translation asynchronously
-//      new TranslateAsyncTask(this, sourceLanguageCodeTranslation, targetLanguageCodeTranslation,
-//          ocrResult.getText()).execute();
-//    } else {
-//      translationLanguageLabelTextView.setVisibility(View.GONE);
-//      translationLanguageTextView.setVisibility(View.GONE);
-//      translationTextView.setVisibility(View.GONE);
       progressView.setVisibility(View.GONE);
       setProgressBarVisibility(false);
-//    }
     return true;
   }
   
@@ -884,10 +865,11 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     if (v.equals(ocrResultView)) {
       menu.add(Menu.NONE, OPTIONS_COPY_RECOGNIZED_TEXT_ID, Menu.NONE, "Copy recognized text");
       menu.add(Menu.NONE, OPTIONS_SHARE_RECOGNIZED_TEXT_ID, Menu.NONE, "Share recognized text");
-    } else if (v.equals(translationView)){
-      menu.add(Menu.NONE, OPTIONS_COPY_TRANSLATED_TEXT_ID, Menu.NONE, "Copy translated text");
-      menu.add(Menu.NONE, OPTIONS_SHARE_TRANSLATED_TEXT_ID, Menu.NONE, "Share translated text");
     }
+//    else if (v.equals(translationView)){
+//      menu.add(Menu.NONE, OPTIONS_COPY_TRANSLATED_TEXT_ID, Menu.NONE, "Copy translated text");
+//      menu.add(Menu.NONE, OPTIONS_SHARE_TRANSLATED_TEXT_ID, Menu.NONE, "Share translated text");
+//    }
   }
 
   @Override
@@ -909,20 +891,20 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     	shareRecognizedTextIntent.putExtra(android.content.Intent.EXTRA_TEXT, ocrResultView.getText());
     	startActivity(Intent.createChooser(shareRecognizedTextIntent, "Share via"));
     	return true;
-    case OPTIONS_COPY_TRANSLATED_TEXT_ID:
-        clipboardManager.setText(translationView.getText());
-      if (clipboardManager.hasText()) {
-        Toast toast = Toast.makeText(this, "Text copied.", Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.BOTTOM, 0, 0);
-        toast.show();
-      }
-      return true;
-    case OPTIONS_SHARE_TRANSLATED_TEXT_ID:
-    	Intent shareTranslatedTextIntent = new Intent(android.content.Intent.ACTION_SEND);
-    	shareTranslatedTextIntent.setType("text/plain");
-    	shareTranslatedTextIntent.putExtra(android.content.Intent.EXTRA_TEXT, translationView.getText());
-    	startActivity(Intent.createChooser(shareTranslatedTextIntent, "Share via"));
-    	return true;
+//    case OPTIONS_COPY_TRANSLATED_TEXT_ID:
+//        clipboardManager.setText(translationView.getText());
+//      if (clipboardManager.hasText()) {
+//        Toast toast = Toast.makeText(this, "Text copied.", Toast.LENGTH_LONG);
+//        toast.setGravity(Gravity.BOTTOM, 0, 0);
+//        toast.show();
+//      }
+//      return true;
+//    case OPTIONS_SHARE_TRANSLATED_TEXT_ID:
+//    	Intent shareTranslatedTextIntent = new Intent(android.content.Intent.ACTION_SEND);
+//    	shareTranslatedTextIntent.setType("text/plain");
+//    	shareTranslatedTextIntent.putExtra(android.content.Intent.EXTRA_TEXT, translationView.getText());
+//    	startActivity(Intent.createChooser(shareTranslatedTextIntent, "Share via"));
+//    	return true;
     default:
       return super.onContextItemSelected(item);
     }
@@ -1092,7 +1074,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         ocrEngineMode = TessBaseAPI.OEM_TESSERACT_CUBE_COMBINED;
       }
       
-      //Retrieve from preferences, and set in this Activity, the character blacklist and whitelist
+      // Retrieve from preferences, and set in this Activity, the character blacklist and whitelist
       characterBlacklist = OcrCharacterHelper.getBlacklist(prefs, sourceLanguageCodeOcr);
       characterWhitelist = OcrCharacterHelper.getWhitelist(prefs, sourceLanguageCodeOcr);
       
