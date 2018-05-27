@@ -152,24 +152,26 @@ final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
       deleteCubeDataFiles(tessdataDir);
     }
 
-    // Check whether all Cube data files have already been installed
-    boolean isAllCubeDataInstalled = false;
-    if (isCubeSupported) {
-      boolean isAFileMissing = false;
-      File dataFile;
-      for (String s : CUBE_DATA_FILES) {
-        dataFile = new File(tessdataDir.toString() + File.separator + languageCode + s);
-        if (!dataFile.exists()) {
-          isAFileMissing = true;
-        }
-      }
-      isAllCubeDataInstalled = !isAFileMissing;
-    }
+//    // Check whether all Cube data files have already been installed
+//    boolean isAllCubeDataInstalled = false;
+//    if (isCubeSupported) {
+//      boolean isAFileMissing = false;
+//      File dataFile;
+//      for (String s : CUBE_DATA_FILES) {
+//        dataFile = new File(tessdataDir.toString() + File.separator + languageCode + s);
+//        if (!dataFile.exists()) {
+//          isAFileMissing = true;
+//        }
+//      }
+//      isAllCubeDataInstalled = !isAFileMissing;
+//    }
 
     // If language data files are not present, install them
     boolean installSuccess = false;
     if (!tesseractTestFile.exists()
-        || (isCubeSupported && !isAllCubeDataInstalled)) {
+//        || (isCubeSupported && !isAllCubeDataInstalled)
+            ) {
+
       Log.d(TAG, "Language data for " + languageCode + " not found in " + tessdataDir.toString());
       deleteCubeDataFiles(tessdataDir);
 
@@ -464,14 +466,14 @@ final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
     }
   }
 
-  /**
-   * Returns the uncompressed size for a Gzipped file.
-   * 
-   * @param file
-   *          Gzipped file to get the size for
-   * @return Size when uncompressed, in bytes
-   * @throws IOException
-   */
+//  /**
+//   * Returns the uncompressed size for a Gzipped file.
+//   *
+//   * @param file
+//   *          Gzipped file to get the size for
+//   * @return Size when uncompressed, in bytes
+//   * @throws IOException
+//   */
   private int getGzipSizeUncompressed(File zipFile) throws IOException {
     RandomAccessFile raf = new RandomAccessFile(zipFile, "r");
     raf.seek(raf.length() - 4);

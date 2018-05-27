@@ -33,8 +33,7 @@ public final class OcrResultText {
   private final List<Rect> textlineBoundingBoxes;
   private final List<Rect> stripBoundingBoxes;
   private final List<Rect> wordBoundingBoxes;
-  private final List<Rect> characterBoundingBoxes;
-  
+
   public OcrResultText(String text,
                    int[] wordConfidences,
                    int meanConfidence,
@@ -42,8 +41,8 @@ public final class OcrResultText {
                    List<Rect> regionBoundingBoxes,
                    List<Rect> textlineBoundingBoxes,
                    List<Rect> stripBoundingBoxes,
-                   List<Rect> wordBoundingBoxes,
-                   List<Rect> characterBoundingBoxes) {
+                   List<Rect> wordBoundingBoxes
+                   ) {
     this.text = text;
     this.wordConfidences = wordConfidences;
     this.meanConfidence = meanConfidence;
@@ -52,7 +51,6 @@ public final class OcrResultText {
     this.textlineBoundingBoxes = textlineBoundingBoxes;
     this.stripBoundingBoxes = stripBoundingBoxes;
     this.wordBoundingBoxes = wordBoundingBoxes;
-    this.characterBoundingBoxes = characterBoundingBoxes;
   }
 
   public String getText() {
@@ -67,10 +65,6 @@ public final class OcrResultText {
     return wordConfidences;
   }
 
-  public int getMeanConfidence() {
-    return meanConfidence;
-  }
-  
   public List<Rect> getRegionBoundingBoxes() {
     return regionBoundingBoxes;
   }
@@ -86,11 +80,7 @@ public final class OcrResultText {
   public List<Rect> getWordBoundingBoxes() {
     return wordBoundingBoxes;
   }
-  
-  public List<Rect> getCharacterBoundingBoxes() {
-    return characterBoundingBoxes;
-  }
-  
+
   @Override
   public String toString() {
     return text + " " + meanConfidence;

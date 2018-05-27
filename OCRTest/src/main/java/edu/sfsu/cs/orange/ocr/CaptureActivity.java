@@ -55,13 +55,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   
   // Note: These constants will be overridden by any default values defined in preferences.xml.
 
-  
-  /** Flag to display the real-time recognition results at the top of the scanning screen. */
-  private static final boolean CONTINUOUS_DISPLAY_RECOGNIZED_TEXT = true;
-  
-  /** Flag to display recognition-related statistics on the scanning screen. */
-  private static final boolean CONTINUOUS_DISPLAY_METADATA = true;
-  
   /** Flag to enable display of the on-screen shutter button. */
   private static final boolean DISPLAY_SHUTTER_BUTTON = true;
 
@@ -74,10 +67,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   /** Destination filename for orientation and script detection (OSD) data. */
   static final String OSD_FILENAME_BASE = "osd.traineddata";
 
-  // Context menu
-  private static final int SETTINGS_ID = Menu.FIRST;
-  private static final int ABOUT_ID = Menu.FIRST + 1;
-  
   // Options menu, for copy to clipboard
   private static final int OPTIONS_COPY_RECOGNIZED_TEXT_ID = Menu.FIRST;
   private static final int OPTIONS_SHARE_RECOGNIZED_TEXT_ID = Menu.FIRST + 2;
@@ -94,17 +83,16 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   private View cameraButtonView;
   private View resultView;
   private View progressView;
-  private OcrResult lastResult;
+    private OcrResult lastResult;
   private Bitmap lastBitmap;
   private boolean hasSurface;
- // private BeepManager beepManager;
   private TessBaseAPI baseApi; // Java interface for the Tesseract OCR engine
   private String sourceLanguageCodeOcr; // ISO 639-3 language code
   private String sourceLanguageReadable = "English"; // Language name, for example, "English"
   private int pageSegmentationMode = TessBaseAPI.PageSegMode.PSM_AUTO_OSD;
   private int ocrEngineMode = TessBaseAPI.OEM_TESSERACT_ONLY;
-  private String characterBlacklist;
-  private String characterWhitelist;
+  private String characterBlacklist = null;
+  private String characterWhitelist = null;
   private ShutterButton shutterButton;
   private boolean isContinuousModeActive = false; // Whether we are doing OCR in continuous mode
   private SharedPreferences prefs;
@@ -572,17 +560,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
    */
   private void resetStatusView() {
     resultView.setVisibility(View.GONE);
-    if (CONTINUOUS_DISPLAY_METADATA) {
-      statusViewBottom.setText("");
-      statusViewBottom.setTextSize(14);
-      statusViewBottom.setTextColor(getResources().getColor(R.color.status_text));
-      statusViewBottom.setVisibility(View.VISIBLE);
-    }
-    if (CONTINUOUS_DISPLAY_RECOGNIZED_TEXT) {
-      statusViewTop.setText("");
-      statusViewTop.setTextSize(14);
-      statusViewTop.setVisibility(View.VISIBLE);
-    }
     viewfinderView.setVisibility(View.VISIBLE);
     cameraButtonView.setVisibility(View.VISIBLE);
     if (DISPLAY_SHUTTER_BUTTON) {
@@ -597,17 +574,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     Toast toast = Toast.makeText(this, "OCR: " + sourceLanguageReadable, Toast.LENGTH_LONG);
     toast.setGravity(Gravity.TOP, 0, 0);
     toast.show();
-  }
-  
-  /**
-   * Displays an initial message to the user while waiting for the first OCR request to be
-   * completed after starting realtime OCR.
-   */
-  void setStatusViewForContinuous() {
-    viewfinderView.removeResultText();
-    if (CONTINUOUS_DISPLAY_METADATA) {
-      statusViewBottom.setText("OCR: " + sourceLanguageReadable + " - waiting for OCR...");
-    }
   }
   
   @SuppressWarnings("unused")

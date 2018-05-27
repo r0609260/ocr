@@ -1,27 +1,10 @@
-/*
- * Copyright 2011 Robert Theis
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package edu.sfsu.cs.orange.ocr;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -35,10 +18,6 @@ import com.googlecode.tesseract.android.TessBaseAPI.PageIteratorLevel;
  * and dismiss the indeterminate progress dialog box. Used for non-continuous mode OCR only.
  */
 final class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
-
-  //  private static final boolean PERFORM_FISHER_THRESHOLDING = false; 
-  //  private static final boolean PERFORM_OTSU_THRESHOLDING = false; 
-  //  private static final boolean PERFORM_SOBEL_THRESHOLDING = false; 
 
   private CaptureActivity activity;
   private TessBaseAPI baseApi;
@@ -61,22 +40,6 @@ final class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
     long start = System.currentTimeMillis();
     Bitmap bitmap = activity.getCameraManager().buildLuminanceSource(data, width, height).renderCroppedGreyscaleBitmap();
     String textResult;
-
-    //      if (PERFORM_FISHER_THRESHOLDING) {
-    //        Pix thresholdedImage = Thresholder.fisherAdaptiveThreshold(ReadFile.readBitmap(bitmap), 48, 48, 0.1F, 2.5F);
-    //        Log.e("OcrRecognizeAsyncTask", "thresholding completed. converting to bmp. size:" + bitmap.getWidth() + "x" + bitmap.getHeight());
-    //        bitmap = WriteFile.writeBitmap(thresholdedImage);
-    //      }
-    //      if (PERFORM_OTSU_THRESHOLDING) {
-    //        Pix thresholdedImage = Binarize.otsuAdaptiveThreshold(ReadFile.readBitmap(bitmap), 48, 48, 9, 9, 0.1F);
-    //        Log.e("OcrRecognizeAsyncTask", "thresholding completed. converting to bmp. size:" + bitmap.getWidth() + "x" + bitmap.getHeight());
-    //        bitmap = WriteFile.writeBitmap(thresholdedImage);
-    //      }
-    //      if (PERFORM_SOBEL_THRESHOLDING) {
-    //        Pix thresholdedImage = Thresholder.sobelEdgeThreshold(ReadFile.readBitmap(bitmap), 64);
-    //        Log.e("OcrRecognizeAsyncTask", "thresholding completed. converting to bmp. size:" + bitmap.getWidth() + "x" + bitmap.getHeight());
-    //        bitmap = WriteFile.writeBitmap(thresholdedImage);
-    //      }
 
     try {     
       baseApi.setImage(ReadFile.readBitmap(bitmap));

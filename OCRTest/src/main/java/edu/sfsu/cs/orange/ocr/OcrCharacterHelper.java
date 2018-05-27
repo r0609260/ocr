@@ -63,21 +63,4 @@ public class OcrCharacterHelper {
       throw new IllegalArgumentException();
     }
   }
-
-  public static void setBlacklist(SharedPreferences prefs, String languageCode, String blacklist) {
-
-      if (languageCode.equals("eng")) { prefs.edit().putString(KEY_CHARACTER_BLACKLIST_ENGLISH, blacklist).commit(); }
-
-    else {
-      throw new IllegalArgumentException();
-    }
-  }
-
-  public static void setWhitelist(SharedPreferences prefs, String languageCode, String whitelist) {
-
-     if (languageCode.equals("eng")) { prefs.edit().putString(KEY_CHARACTER_WHITELIST_ENGLISH, whitelist).commit(); }
-    else {
-      throw new IllegalArgumentException();
-    }
-  }
 }

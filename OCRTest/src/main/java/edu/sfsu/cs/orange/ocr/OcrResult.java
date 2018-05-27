@@ -37,39 +37,13 @@ public class OcrResult {
   private List<Rect> regionBoundingBoxes;
   private List<Rect> textlineBoundingBoxes;
   private List<Rect> wordBoundingBoxes;
-  private List<Rect> stripBoundingBoxes;  
+  private List<Rect> stripBoundingBoxes;
   private List<Rect> characterBoundingBoxes;
 
   private long timestamp;
   private long recognitionTimeRequired;
 
   private Paint paint;
-  
-  public OcrResult(Bitmap bitmap,
-                   String text,
-                   int[] wordConfidences,
-                   int meanConfidence,
-                   List<Rect> regionBoundingBoxes,
-                   List<Rect> textlineBoundingBoxes,
-                   List<Rect> wordBoundingBoxes,
-                   List<Rect> stripBoundingBoxes,
-                   List<Rect> characterBoundingBoxes,
-                   long recognitionTimeRequired) {
-    this.bitmap = bitmap;
-    this.text = text;
-    this.wordConfidences = wordConfidences;
-    this.meanConfidence = meanConfidence;
-    this.regionBoundingBoxes = regionBoundingBoxes;
-    this.textlineBoundingBoxes = textlineBoundingBoxes;
-    this.wordBoundingBoxes = wordBoundingBoxes;
-    this.stripBoundingBoxes = stripBoundingBoxes;
-    this.characterBoundingBoxes = characterBoundingBoxes;
-    this.recognitionTimeRequired = recognitionTimeRequired;
-    this.timestamp = System.currentTimeMillis();
-    
-    this.paint = new Paint();
-  }
-
   public OcrResult() {
     timestamp = System.currentTimeMillis();
     this.paint = new Paint();
@@ -90,63 +64,13 @@ public class OcrResult {
       paint.setStrokeWidth(2);
       Rect r = wordBoundingBoxes.get(i);
       canvas.drawRect(r, paint);
-    }    
-    
-//    // Draw bounding boxes around each character
-//    for (int i = 0; i < characterBoundingBoxes.size(); i++) {
-//      paint.setAlpha(0xA0);
-//      paint.setColor(0xFF00FF00);
-//      paint.setStyle(Style.STROKE);
-//      paint.setStrokeWidth(3);
-//      Rect r = characterBoundingBoxes.get(i);
-//      canvas.drawRect(r, paint);
-//    }
+    }
     
     return bitmap;
   }
   
   public String getText() {
     return text;
-  }
-
-  public int[] getWordConfidences() {
-    return wordConfidences;
-  }
-
-  public int getMeanConfidence() {
-    return meanConfidence;
-  }
-
-  public long getRecognitionTimeRequired() {
-    return recognitionTimeRequired;
-  }
-
-  public Point getBitmapDimensions() {
-    return new Point(bitmap.getWidth(), bitmap.getHeight()); 
-  }
-  
-  public List<Rect> getRegionBoundingBoxes() {
-    return regionBoundingBoxes;
-  }
-  
-  public List<Rect> getTextlineBoundingBoxes() {
-    return textlineBoundingBoxes;
-  }
-  
-  public List<Rect> getWordBoundingBoxes() {
-    return wordBoundingBoxes;
-  }
-  
-  public List<Rect> getStripBoundingBoxes() {
-  	return stripBoundingBoxes;
-  }
-  
-  public List<Rect> getCharacterBoundingBoxes() {
-    return characterBoundingBoxes;
-  }
-  
-  public long getTimestamp() {
-    return timestamp;
   }
   
   public void setBitmap(Bitmap bitmap) {
