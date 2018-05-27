@@ -86,10 +86,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   
   /** ISO 639-1 language code indicating the default target language for translation. */
   public static final String DEFAULT_TARGET_LANGUAGE_CODE = "es";
-  
-  /** The default online machine translation service to use. */
-//  public static final String DEFAULT_TRANSLATOR = "Google Translate";
-  
+
   /** The default OCR engine to use. */
   public static final String DEFAULT_OCR_ENGINE_MODE = "Tesseract";
   
@@ -101,10 +98,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   
   /** Whether to initially disable continuous-picture and continuous-video focus modes. */
   public static final boolean DEFAULT_DISABLE_CONTINUOUS_FOCUS = true;
-  
-  /** Whether to beep by default when the shutter button is pressed. */
-  public static final boolean DEFAULT_TOGGLE_BEEP = false;
-  
+
   /** Whether to initially show a looping, real-time OCR display. */
   public static final boolean DEFAULT_TOGGLE_CONTINUOUS = false;
   
@@ -216,9 +210,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     
     //checkFirstLaunch();
     
-    if (isFirstLaunch) {
+    //if (isFirstLaunch) {
       setDefaultPreferences();
-    }
+    //}
     
     Window window = getWindow();
     window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -236,8 +230,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     handler = null;
     lastResult = null;
     hasSurface = false;
-    //beepManager = new BeepManager(this);
-    
+
     // Camera shutter button
     if (DISPLAY_SHUTTER_BUTTON) {
       shutterButton = (ShutterButton) findViewById(R.id.shutter_button);
@@ -246,9 +239,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
    
     ocrResultView = (TextView) findViewById(R.id.ocr_result_text_view);
     registerForContextMenu(ocrResultView);
-    //translationView = (TextView) findViewById(R.id.translation_text_view);
-    //registerForContextMenu(translationView);
-    
+
     progressView = (View) findViewById(R.id.indeterminate_progress_indicator_view);
 
     cameraManager = new CameraManager(getApplication());
@@ -1004,37 +995,12 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       // Retrieve from preferences, and set in this Activity, the language preferences
       PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
       setSourceLanguage(prefs.getString(PreferencesActivity.KEY_SOURCE_LANGUAGE_PREFERENCE, CaptureActivity.DEFAULT_SOURCE_LANGUAGE_CODE));
-
-      // Retrieve from preferences, and set in this Activity, the capture mode preference
-      if (prefs.getBoolean(PreferencesActivity.KEY_CONTINUOUS_PREVIEW, CaptureActivity.DEFAULT_TOGGLE_CONTINUOUS)) {
-        isContinuousModeActive = true;
-      } else {
-        isContinuousModeActive = false;
-      }
-
-      // Retrieve from preferences, and set in this Activity, the page segmentation mode preference
+      isContinuousModeActive = false;
+    // Retrieve from preferences, and set in this Activity, the page segmentation mode preference
         pageSegmentationMode = TessBaseAPI.PageSegMode.PSM_AUTO_OSD;
-
-
-      
-      // Retrieve from preferences, and set in this Activity, the OCR engine mode
-      String[] ocrEngineModes = getResources().getStringArray(R.array.ocrenginemodes);
-      String ocrEngineModeName = prefs.getString(PreferencesActivity.KEY_OCR_ENGINE_MODE, ocrEngineModes[0]);
-      if (ocrEngineModeName.equals(ocrEngineModes[0])) {
         ocrEngineMode = TessBaseAPI.OEM_TESSERACT_ONLY;
-      } else if (ocrEngineModeName.equals(ocrEngineModes[1])) {
-        ocrEngineMode = TessBaseAPI.OEM_CUBE_ONLY;
-      } else if (ocrEngineModeName.equals(ocrEngineModes[2])) {
-        ocrEngineMode = TessBaseAPI.OEM_TESSERACT_CUBE_COMBINED;
-      }
-      
-      // Retrieve from preferences, and set in this Activity, the character blacklist and whitelist
-      characterBlacklist = OcrCharacterHelper.getBlacklist(prefs, sourceLanguageCodeOcr);
-      characterWhitelist = OcrCharacterHelper.getWhitelist(prefs, sourceLanguageCodeOcr);
       
       prefs.registerOnSharedPreferenceChangeListener(listener);
-      
-     // beepManager.updatePrefs();
   }
   
   /**
