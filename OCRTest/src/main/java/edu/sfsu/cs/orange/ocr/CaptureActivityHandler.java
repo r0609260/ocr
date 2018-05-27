@@ -87,28 +87,6 @@ final class CaptureActivityHandler extends Handler {
       case R.id.restart_preview:
         restartOcrPreview();
         break;
-      case R.id.ocr_continuous_decode_failed:
-        DecodeHandler.resetDecodeState();        
-        try {
-          activity.handleOcrContinuousDecode((OcrResultFailure) message.obj);
-        } catch (NullPointerException e) {
-          Log.w(TAG, "got bad OcrResultFailure", e);
-        }
-        if (state == State.CONTINUOUS) {
-          restartOcrPreviewAndDecode();
-        }
-        break;
-      case R.id.ocr_continuous_decode_succeeded:
-        DecodeHandler.resetDecodeState();
-        try {
-          activity.handleOcrContinuousDecode((OcrResult) message.obj);
-        } catch (NullPointerException e) {
-          // Continue
-        }
-        if (state == State.CONTINUOUS) {
-          restartOcrPreviewAndDecode();
-        }
-        break;
       case R.id.ocr_decode_succeeded:
         state = State.SUCCESS;
         activity.setShutterButtonClickable(true);

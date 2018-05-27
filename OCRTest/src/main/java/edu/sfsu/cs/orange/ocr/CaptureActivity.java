@@ -698,105 +698,11 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
       progressView.setVisibility(View.VISIBLE);
       setProgressBarVisibility(true);
-      
-      // Get the translation asynchronously
       progressView.setVisibility(View.GONE);
       setProgressBarVisibility(false);
     return true;
   }
-  
-  /**
-   * Displays information relating to the results of a successful real-time OCR request.
-   * 
-   * @param ocrResult Object representing successful OCR results
-   */
-  void handleOcrContinuousDecode(OcrResult ocrResult) {
-   
-    lastResult = ocrResult;
-    
-    // Send an OcrResultText object to the ViewfinderView for text rendering
-    viewfinderView.addResultText(new OcrResultText(ocrResult.getText(), 
-                                                   ocrResult.getWordConfidences(),
-                                                   ocrResult.getMeanConfidence(),
-                                                   ocrResult.getBitmapDimensions(),
-                                                   ocrResult.getRegionBoundingBoxes(),
-                                                   ocrResult.getTextlineBoundingBoxes(),
-                                                   ocrResult.getStripBoundingBoxes(),
-                                                   ocrResult.getWordBoundingBoxes(),
-                                                   ocrResult.getCharacterBoundingBoxes()));
 
-    Integer meanConfidence = ocrResult.getMeanConfidence();
-    
-    if (CONTINUOUS_DISPLAY_RECOGNIZED_TEXT) {
-      // Display the recognized text on the screen
-      statusViewTop.setText(ocrResult.getText());
-      int scaledSize = Math.max(22, 32 - ocrResult.getText().length() / 4);
-      statusViewTop.setTextSize(TypedValue.COMPLEX_UNIT_SP, scaledSize);
-      statusViewTop.setTextColor(Color.BLACK);
-      statusViewTop.setBackgroundResource(R.color.status_top_text_background);
-
-      statusViewTop.getBackground().setAlpha(meanConfidence * (255 / 100));
-    }
-
-    if (CONTINUOUS_DISPLAY_METADATA) {
-      // Display recognition-related metadata at the bottom of the screen
-      long recognitionTimeRequired = ocrResult.getRecognitionTimeRequired();
-      statusViewBottom.setTextSize(14);
-      statusViewBottom.setText("OCR: " + sourceLanguageReadable + " - Mean confidence: " + 
-          meanConfidence.toString() + " - Time required: " + recognitionTimeRequired + " ms");
-    }
-  }
-  
-  /**
-   * Version of handleOcrContinuousDecode for failed OCR requests. Displays a failure message.
-   * 
-   * @param obj Metadata for the failed OCR request.
-   */
-  void handleOcrContinuousDecode(OcrResultFailure obj) {
-    lastResult = null;
-    viewfinderView.removeResultText();
-    
-    // Reset the text in the recognized text box.
-    statusViewTop.setText("");
-
-    if (CONTINUOUS_DISPLAY_METADATA) {
-      // Color text delimited by '-' as red.
-      statusViewBottom.setTextSize(14);
-      CharSequence cs = setSpanBetweenTokens("OCR: " + sourceLanguageReadable + " - OCR failed - Time required: " 
-          + obj.getTimeRequired() + " ms", "-", new ForegroundColorSpan(0xFFFF0000));
-      statusViewBottom.setText(cs);
-    }
-  }
-  
-  /**
-   * Given either a Spannable String or a regular String and a token, apply
-   * the given CharacterStyle to the span between the tokens.
-   * 
-   * NOTE: This method was adapted from:
-   *  http://www.androidengineer.com/2010/08/easy-method-for-formatting-android.html
-   * 
-   * <p>
-   * For example, {@code setSpanBetweenTokens("Hello ##world##!", "##", new
-   * ForegroundColorSpan(0xFFFF0000));} will return a CharSequence {@code
-   * "Hello world!"} with {@code world} in red.
-   * 
-   */
-  private CharSequence setSpanBetweenTokens(CharSequence text, String token,
-      CharacterStyle... cs) {
-    // Start and end refer to the points where the span will apply
-    int tokenLen = token.length();
-    int start = text.toString().indexOf(token) + tokenLen;
-    int end = text.toString().indexOf(token, start);
-
-    if (start > -1 && end > -1) {
-      // Copy the spannable string to a mutable spannable string
-      SpannableStringBuilder ssb = new SpannableStringBuilder(text);
-      for (CharacterStyle c : cs)
-        ssb.setSpan(c, start, end, 0);
-      text = ssb;
-    }
-    return text;
-  }
   
   @Override
   public void onCreateContextMenu(ContextMenu menu, View v,
