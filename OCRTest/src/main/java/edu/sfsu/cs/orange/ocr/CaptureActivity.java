@@ -1004,9 +1004,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       // Retrieve from preferences, and set in this Activity, the language preferences
       PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
       setSourceLanguage(prefs.getString(PreferencesActivity.KEY_SOURCE_LANGUAGE_PREFERENCE, CaptureActivity.DEFAULT_SOURCE_LANGUAGE_CODE));
-      setTargetLanguage(prefs.getString(PreferencesActivity.KEY_TARGET_LANGUAGE_PREFERENCE, CaptureActivity.DEFAULT_TARGET_LANGUAGE_CODE));
-      isTranslationActive = prefs.getBoolean(PreferencesActivity.KEY_TOGGLE_TRANSLATION, false);
-      
+
       // Retrieve from preferences, and set in this Activity, the capture mode preference
       if (prefs.getBoolean(PreferencesActivity.KEY_CONTINUOUS_PREVIEW, CaptureActivity.DEFAULT_TOGGLE_CONTINUOUS)) {
         isContinuousModeActive = true;
@@ -1015,27 +1013,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       }
 
       // Retrieve from preferences, and set in this Activity, the page segmentation mode preference
-      String[] pageSegmentationModes = getResources().getStringArray(R.array.pagesegmentationmodes);
-      String pageSegmentationModeName = prefs.getString(PreferencesActivity.KEY_PAGE_SEGMENTATION_MODE, pageSegmentationModes[0]);
-      if (pageSegmentationModeName.equals(pageSegmentationModes[0])) {
         pageSegmentationMode = TessBaseAPI.PageSegMode.PSM_AUTO_OSD;
-      } else if (pageSegmentationModeName.equals(pageSegmentationModes[1])) {
-        pageSegmentationMode = TessBaseAPI.PageSegMode.PSM_AUTO;
-      } else if (pageSegmentationModeName.equals(pageSegmentationModes[2])) {
-        pageSegmentationMode = TessBaseAPI.PageSegMode.PSM_SINGLE_BLOCK;
-      } else if (pageSegmentationModeName.equals(pageSegmentationModes[3])) {
-        pageSegmentationMode = TessBaseAPI.PageSegMode.PSM_SINGLE_CHAR;
-      } else if (pageSegmentationModeName.equals(pageSegmentationModes[4])) {
-        pageSegmentationMode = TessBaseAPI.PageSegMode.PSM_SINGLE_COLUMN;
-      } else if (pageSegmentationModeName.equals(pageSegmentationModes[5])) {
-        pageSegmentationMode = TessBaseAPI.PageSegMode.PSM_SINGLE_LINE;
-      } else if (pageSegmentationModeName.equals(pageSegmentationModes[6])) {
-        pageSegmentationMode = TessBaseAPI.PageSegMode.PSM_SINGLE_WORD;
-      } else if (pageSegmentationModeName.equals(pageSegmentationModes[7])) {
-        pageSegmentationMode = TessBaseAPI.PageSegMode.PSM_SINGLE_BLOCK_VERT_TEXT;
-      } else if (pageSegmentationModeName.equals(pageSegmentationModes[8])) {
-        pageSegmentationMode = TessBaseAPI.PageSegMode.PSM_SPARSE_TEXT;
-      }
+
+
       
       // Retrieve from preferences, and set in this Activity, the OCR engine mode
       String[] ocrEngineModes = getResources().getStringArray(R.array.ocrenginemodes);
@@ -1068,12 +1048,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
     // Recognition language
     prefs.edit().putString(PreferencesActivity.KEY_SOURCE_LANGUAGE_PREFERENCE, CaptureActivity.DEFAULT_SOURCE_LANGUAGE_CODE).commit();
-
-    // Translation
-    prefs.edit().putBoolean(PreferencesActivity.KEY_TOGGLE_TRANSLATION, CaptureActivity.DEFAULT_TOGGLE_TRANSLATION).commit();
-
-    // Translation target language
-    prefs.edit().putString(PreferencesActivity.KEY_TARGET_LANGUAGE_PREFERENCE, CaptureActivity.DEFAULT_TARGET_LANGUAGE_CODE).commit();
 
     // OCR Engine
     prefs.edit().putString(PreferencesActivity.KEY_OCR_ENGINE_MODE, CaptureActivity.DEFAULT_OCR_ENGINE_MODE).commit();
