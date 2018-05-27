@@ -151,9 +151,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   
   // Options menu, for copy to clipboard
   private static final int OPTIONS_COPY_RECOGNIZED_TEXT_ID = Menu.FIRST;
-  private static final int OPTIONS_COPY_TRANSLATED_TEXT_ID = Menu.FIRST + 1;
   private static final int OPTIONS_SHARE_RECOGNIZED_TEXT_ID = Menu.FIRST + 2;
-  private static final int OPTIONS_SHARE_TRANSLATED_TEXT_ID = Menu.FIRST + 3;
 
   private CameraManager cameraManager;
   private CaptureActivityHandler handler;
@@ -207,12 +205,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
   @Override
   public void onCreate(Bundle icicle) {
     super.onCreate(icicle);
-    
-    //checkFirstLaunch();
-    
-    //if (isFirstLaunch) {
-      setDefaultPreferences();
-    //}
     
     Window window = getWindow();
     window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -543,19 +535,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     return true;
   }
 
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    Intent intent;
-    switch (item.getItemId()) {
-    case SETTINGS_ID: {
-      intent = new Intent().setClass(this, PreferencesActivity.class);
-      startActivity(intent);
-      break;
-    }
-    }
-    return super.onOptionsItemSelected(item);
-  }
-
   public void surfaceDestroyed(SurfaceHolder holder) {
     hasSurface = false;
   }
@@ -633,8 +612,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       //set the ocrEngineMode to Tesseract
 
     ocrEngineMode = TessBaseAPI.OEM_TESSERACT_ONLY;
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-    prefs.edit().putString(PreferencesActivity.KEY_OCR_ENGINE_MODE,"Tesseract").commit();
 
     // Display the name of the OCR engine we're initializing in the indeterminate progress dialog box
     indeterminateDialog = new ProgressDialog(this);
@@ -855,36 +832,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       prefs.registerOnSharedPreferenceChangeListener(listener);
   }
   
-  /**
-   * Sets default values for preferences. To be called the first time this app is run.
-   */
-  private void setDefaultPreferences() {
-    prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-    // Continuous preview
-    prefs.edit().putBoolean(PreferencesActivity.KEY_CONTINUOUS_PREVIEW, CaptureActivity.DEFAULT_TOGGLE_CONTINUOUS).commit();
-
-    // Recognition language
-    prefs.edit().putString(PreferencesActivity.KEY_SOURCE_LANGUAGE_PREFERENCE, CaptureActivity.DEFAULT_SOURCE_LANGUAGE_CODE).commit();
-
-    // OCR Engine
-    prefs.edit().putString(PreferencesActivity.KEY_OCR_ENGINE_MODE, CaptureActivity.DEFAULT_OCR_ENGINE_MODE).commit();
-
-    // Autofocus
-    prefs.edit().putBoolean(PreferencesActivity.KEY_AUTO_FOCUS, CaptureActivity.DEFAULT_TOGGLE_AUTO_FOCUS).commit();
-    
-    // Disable problematic focus modes
-    prefs.edit().putBoolean(PreferencesActivity.KEY_DISABLE_CONTINUOUS_FOCUS, CaptureActivity.DEFAULT_DISABLE_CONTINUOUS_FOCUS).commit();
-
-    // Page segmentation mode
-    prefs.edit().putString(PreferencesActivity.KEY_PAGE_SEGMENTATION_MODE, CaptureActivity.DEFAULT_PAGE_SEGMENTATION_MODE).commit();
-
-    // Reversed camera image
-    prefs.edit().putBoolean(PreferencesActivity.KEY_REVERSE_IMAGE, CaptureActivity.DEFAULT_TOGGLE_REVERSED_IMAGE).commit();
-
-    // Light
-    prefs.edit().putBoolean(PreferencesActivity.KEY_TOGGLE_LIGHT, CaptureActivity.DEFAULT_TOGGLE_LIGHT).commit();
-  }
   
   void displayProgressDialog() {
     // Set up the indeterminate progress dialog box

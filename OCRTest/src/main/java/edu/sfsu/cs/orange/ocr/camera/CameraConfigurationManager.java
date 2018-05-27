@@ -27,7 +27,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
-import edu.sfsu.cs.orange.ocr.PreferencesActivity;
+//import edu.sfsu.cs.orange.ocr.PreferencesActivity;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -93,26 +93,10 @@ final class CameraConfigurationManager {
 
     initializeTorch(parameters, prefs);
     String focusMode = null;
-    if (prefs.getBoolean(PreferencesActivity.KEY_AUTO_FOCUS, true)) {
-      if (prefs.getBoolean(PreferencesActivity.KEY_DISABLE_CONTINUOUS_FOCUS, false)) {
+
         focusMode = findSettableValue(parameters.getSupportedFocusModes(),
             Camera.Parameters.FOCUS_MODE_AUTO);
-      } else {
-        focusMode = findSettableValue(parameters.getSupportedFocusModes(),
-            "continuous-video", // Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO in 4.0+
-            "continuous-picture", // Camera.Paramters.FOCUS_MODE_CONTINUOUS_PICTURE in 4.0+
-            Camera.Parameters.FOCUS_MODE_AUTO);
-      }
-    }
-    // Maybe selected auto-focus but not available, so fall through here:
-    if (focusMode == null) {
-      focusMode = findSettableValue(parameters.getSupportedFocusModes(),
-                                    Camera.Parameters.FOCUS_MODE_MACRO,
-                                    "edof"); // Camera.Parameters.FOCUS_MODE_EDOF in 2.2+
-    }
-    if (focusMode != null) {
-      parameters.setFocusMode(focusMode);
-    }
+
 
     parameters.setPreviewSize(cameraResolution.x, cameraResolution.y);
     camera.setParameters(parameters);
@@ -126,21 +110,8 @@ final class CameraConfigurationManager {
     return screenResolution;
   }
 
-  void setTorch(Camera camera, boolean newSetting) {
-    Camera.Parameters parameters = camera.getParameters();
-    doSetTorch(parameters, newSetting);
-    camera.setParameters(parameters);
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-    boolean currentSetting = prefs.getBoolean(PreferencesActivity.KEY_TOGGLE_LIGHT, false);
-    if (currentSetting != newSetting) {
-      SharedPreferences.Editor editor = prefs.edit();
-      editor.putBoolean(PreferencesActivity.KEY_TOGGLE_LIGHT, newSetting);
-      editor.commit();
-    }
-  }
-
   private static void initializeTorch(Camera.Parameters parameters, SharedPreferences prefs) {
-    boolean currentSetting = prefs.getBoolean(PreferencesActivity.KEY_TOGGLE_LIGHT, false);
+    boolean currentSetting = false;
     doSetTorch(parameters, currentSetting);
   }
 

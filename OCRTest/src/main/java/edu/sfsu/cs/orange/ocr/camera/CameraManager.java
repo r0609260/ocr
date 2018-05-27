@@ -27,7 +27,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import edu.sfsu.cs.orange.ocr.PlanarYUVLuminanceSource;
-import edu.sfsu.cs.orange.ocr.PreferencesActivity;
+//import edu.sfsu.cs.orange.ocr.PreferencesActivity;
 
 import java.io.IOException;
 
@@ -98,7 +98,8 @@ public final class CameraManager {
     configManager.setDesiredCameraParameters(theCamera);
     
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-    reverseImage = prefs.getBoolean(PreferencesActivity.KEY_REVERSE_IMAGE, false);
+    reverseImage = false;
+//    reverseImage = prefs.getBoolean(PreferencesActivity.KEY_REVERSE_IMAGE, false);
   }
 
   /**
