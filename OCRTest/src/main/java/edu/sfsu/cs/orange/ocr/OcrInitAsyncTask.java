@@ -127,11 +127,6 @@ final class OcrInitAsyncTask extends AsyncTask<String, String, Boolean> {
     // Example Tesseract data filename: "eng.traineddata"
     String destinationFilenameBase = languageCode + ".traineddata";
     boolean isCubeSupported = false;
-    for (String s : CaptureActivity.CUBE_SUPPORTED_LANGUAGES) {
-      if (s.equals(languageCode)) {
-        isCubeSupported = true;   
-      }
-    }
 
     // Check for, and create if necessary, folder to hold model data
     String destinationDirBase = params[0]; // The storage directory, minus the
