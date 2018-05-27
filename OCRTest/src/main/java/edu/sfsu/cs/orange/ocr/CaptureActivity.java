@@ -994,13 +994,22 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
       
       // Retrieve from preferences, and set in this Activity, the language preferences
       PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-      setSourceLanguage(prefs.getString(PreferencesActivity.KEY_SOURCE_LANGUAGE_PREFERENCE, CaptureActivity.DEFAULT_SOURCE_LANGUAGE_CODE));
-      isContinuousModeActive = false;
+      setSourceLanguage("eng");
+
+    isContinuousModeActive = false;
+
+
     // Retrieve from preferences, and set in this Activity, the page segmentation mode preference
         pageSegmentationMode = TessBaseAPI.PageSegMode.PSM_AUTO_OSD;
         ocrEngineMode = TessBaseAPI.OEM_TESSERACT_ONLY;
-      
+
+      // Retrieve from preferences, and set in this Activity, the character blacklist and whitelist
+      characterBlacklist = OcrCharacterHelper.getBlacklist(prefs, sourceLanguageCodeOcr);
+      characterWhitelist = OcrCharacterHelper.getWhitelist(prefs, sourceLanguageCodeOcr);
+
       prefs.registerOnSharedPreferenceChangeListener(listener);
+
+     // beepManager.updatePrefs();
   }
   
   /**
